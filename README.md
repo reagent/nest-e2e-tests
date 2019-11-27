@@ -1,75 +1,42 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+# Nest.js E2E Testing Examples
 
-[travis-image]: https://api.travis-ci.org/nestjs/nest.svg?branch=master
-[travis-url]: https://travis-ci.org/nestjs/nest
-[linux-image]: https://img.shields.io/travis/nestjs/nest/master.svg?label=linux
-[linux-url]: https://travis-ci.org/nestjs/nest
-  
-  <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://api.travis-ci.org/nestjs/nest.svg?branch=master" alt="Travis" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://img.shields.io/travis/nestjs/nest/master.svg?label=linux" alt="Linux" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#5" alt="Coverage" /></a>
-<a href="https://gitter.im/nestjs/nestjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge"><img src="https://badges.gitter.im/nestjs/nestjs.svg" alt="Gitter" /></a>
-<a href="https://opencollective.com/nest#backer"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec"><img src="https://img.shields.io/badge/Donate-PayPal-dc3d53.svg"/></a>
-  <a href="https://twitter.com/nestframework"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+The [official documentation][1] (and the templated starter) for [Nest.js][2]
+shows an end-to-end test that uses the `Test.createTestModule()` helper to
+create an instance of `INestApplication` that is used for the subsequent tests.
 
-## Description
+## Problem
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+It may simply be an issue of nomenclature -- when I see the phrase "end-to-end",
+this makes me think the intention is that of an integration test, where all
+components of the application are integrated and then exercised together in a
+testing context.
 
-## Installation
+To be fair to Nest, the documentation states that this is not _quite_ an
+integration test:
 
-```bash
-$ npm install
-```
+> ... closer to the kind of interaction that end-users will have with the
+> production system ...
 
-## Running the app
+The key word here is _closer_ -- these tests in Nest approximate the type of
+behavior a consumer app might see, but it's not the full story. As a basic
+example, adding a `ValidationPipe` to the global pipes that validates all
+incoming request bodies against their configured DTOs will not be triggered when
+using the `Test.createTestModule()` approach.
 
-```bash
-# development
-$ npm run start
+This difference is demonstrated in
+[`test/app.e2e-spec.ts`](test/app.e2e-spec.ts).
 
-# watch mode
-$ npm run start:dev
+## Solution
 
-# production mode
-$ npm run start:prod
-```
+It's not clear what value a "Nest-style" e2e test provides by not being a full
+integration test, so there are a couple options:
 
-## Test
+1. Stop using `Test.createTestModule()` in all e2e tests entirely and instead
+   use the actual app instance that is run in development and all other
+   environments
 
-```bash
-# unit tests
-$ npm run test
+1. Abandon the use of e2e tests as a label and instead move to (potentially)
+   more appropriately named "integration" tests (e.g. `app.integration.spec.ts`)
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-  Nest is [MIT licensed](LICENSE).
+[1]: https://docs.nestjs.com/fundamentals/testing#end-to-end-testing
+[2]: https://nestjs.com
