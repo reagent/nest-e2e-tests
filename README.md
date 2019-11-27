@@ -24,7 +24,17 @@ incoming request bodies against their configured DTOs will not be triggered when
 using the `Test.createTestModule()` approach.
 
 This difference is demonstrated in
-[`test/app.e2e-spec.ts`](test/app.e2e-spec.ts).
+[`test/app.e2e-spec.ts`](test/app.e2e-spec.ts):
+
+```
+  AppController (e2e)
+    using testing module fixture
+      POST / with an empty body
+        ✓ returns a successful empty response (607ms)
+    using bootstrapped app
+      POST / with an empty body
+        ✓ returns a 400 error (29ms)
+```
 
 ## Solution
 
